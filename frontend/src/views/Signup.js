@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { validation } from "./SignupValidation";
+import { validation } from "../Components/SignUpComponents/SignupValidation";
 import { useState } from "react";
 import axios from "axios";
-import imageBackground from './imagenes/backgroundGrande.webp'
+import imageBackground from '../imagenes/backgroundGrande.webp'
+import NavInLoginAndRegister from "../Components/NavComponent/NavInLoginAndRegister";
 function Signup() {
   const [values, setValues] = useState({
     name: "",
@@ -43,57 +44,58 @@ function Signup() {
     <div 
     style={{ backgroundImage: `url(${imageBackground})` }}
     className="flex flex-col items-center justify-center min-h-screen bg-center bg-no-repeat bg-cover relative">
-      <div className="w-full h-screen absolute bg-black/50"></div>
-      <div className="bg-white p-3 rounded w-96 z-20">
-        <h2 className="text-center font-bold text-xl">Sign Up</h2>
+      <NavInLoginAndRegister/>
+    <div className="w-full h-screen absolute bg-black/50 "></div>
+      <div className="bg-black/60 border-2 px-10 py-6 text-white  border-red-900 p-3 rounded-xl  z-20 shadow-xl shadow-red-900">
+        <h2 className="text-center font-bold text-2xl text-red-700 pb-4">Crear Cuenta</h2>
         <form action="" className="flex flex-col gap-2" onSubmit={handleSubmit}>
-          <div className="mb-3 flex flex-col ">
+          <div className="mb-3 flex flex-col gap-4 ">
             <label htmlFor="name">
-              <strong>Name</strong>
+              <strong>Nombre</strong>
             </label>
             <input
               type="text"
-              placeholder="Enter Name"
+              placeholder="Ingrese su nombre"
               onChange={handleInput}
               name="name"
               id="name"
-              className="p-2 border-2 border-gray-200  focus:border-sky-400 focus:outline-none rounded"
+               className="p-2 border-2 border-gray-200 text-black  focus:border-red-900 focus:outline-none rounded"
             />
             {errors.name && <span className="text-red-600">{errors.name}</span>}
           </div>
-          <div className="mb-3 flex flex-col ">
+          <div className="mb-3 flex flex-col gap-4">
             <label htmlFor="email">
-              <strong>Email</strong>
+              <strong>Correo electrónico</strong>
             </label>
             <input
               type="email"
-              placeholder="Enter Email"
+              placeholder="Ejemplo: aronccente@gmail.com"
               name="email"
               id="email"
               onChange={handleInput}
-              className="p-2 border-2 border-gray-200  focus:border-sky-400 focus:outline-none rounded"
+              className="p-2 border-2 border-gray-200 text-black  focus:border-red-900 focus:outline-none rounded"
             />
             {errors.email && (
               <span className="text-red-600">{errors.email}</span>
             )}
           </div>
-          <div className="mb-3 flex flex-col">
+          <div className="mb-3 flex flex-col gap-4">
             <label htmlFor="password">
-              <strong>Password</strong>
+              <strong>Contraseña</strong>
             </label>
             <input
               type="password"
-              placeholder="Enter password"
+              placeholder="Contraseña"
               name="password"
               id="password"
               onChange={handleInput}
-              className="p-2 border-2 border-gray-200  focus:border-sky-400 focus:outline-none rounded"
+              className="p-2 border-2 border-gray-200 text-black  focus:border-red-900 focus:outline-none rounded"
             />
             {errors.password && (
               <span className="text-red-600">{errors.password}</span>
             )}
           </div>
-          <div>
+          <div className="flex justify-center gap-4">
             <label>
               <input
                 type="radio"
@@ -118,19 +120,22 @@ function Signup() {
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-green-600 text-white rounded w-40 m-auto"
+             className="px-4 py-2 border-2 border-red-900 hover:bg-white hover:text-red-900 text-white rounded  m-auto"
           >
-            <strong>Create Account</strong>
+            <strong>Crear Cuenta</strong>
           </button>
-          <p className="text-center">
-            You are agree to aour terms and policies
+          <div className="flex items-center justify-center gap-4">
+            <p className="text-center">
+            Si ya tienes una cuenta haz click en
           </p>
           <Link
             to="/"
-            className="px-4 py-2 bg-gray-500 rounded w-40 m-auto text-center"
+            className="border-b-2 border-white hover:border-red-900"
           >
-            Login
+            Iniciar Sesión
           </Link>
+          </div>
+          
         </form>
       </div>
     </div>

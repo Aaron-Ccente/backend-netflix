@@ -5,19 +5,19 @@ export function validation(values){
     const password_pattern = /^(?=.*\d)(?=.*[A-Z])[a-zA-Z0-9]{8,}$/
 
     if(values.email === ""){
-        error.email = "Name should not be empty"
+        error.email = "El correo electrónico no debe estar vacio"
     }
     else if(!email_pattern.test(values.email)){
-        error.email = "Email didn't match"
+        error.email = "El correo electrónico no coincide"
     }
     else{
         error.email = ""
     }
     if(values.password === ""){
-        error.password = "Password should not be empty"
+        error.password = "La contraseña no debe estar vacia"
     }
     else if(!password_pattern.test(values.password)){
-        error.password = "Password didn't match"
+        error.password = "La contraseña no coincide"
     }
     else{
         error.password = ""

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Categoria from "./Categoria";
-import PanelMovie from "./MovieInformation/PanelMovie";
-import Nav from "./NavComponent/Nav";
-import { useAuth } from "./context/AuthContext";
+import Categoria from "../Components/MovieComponents/MovieSaveAndDelete.js";
+import PanelMovie from "../Components/MovieComponents/PanelMovieHome.js";
+import Nav from "../Components/NavComponent/Nav.js";
+import { useAuth } from "../context/AuthContext.js";
 function Home() {
   
   const [movies, setMovies] = useState([]);

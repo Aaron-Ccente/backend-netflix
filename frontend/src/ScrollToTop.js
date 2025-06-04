@@ -10,7 +10,7 @@ export default function ScrollToTop() {
     // Forzar scroll al top en cada cambio de ruta
     window.scrollTo({
       top: 0,
-      behavior: "auto", // puedes poner "smooth" si prefieres
+      behavior: "auto"
     });
   }, [pathname]);
 

@@ -1,44 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Nav from "../NavComponent/Nav";
+import Nav from "../Components/NavComponent/Nav";
 import axios from "axios";
 
 function Favoritos() {
   const location = useLocation();
   const id_persona = location?.state.id;
   const [movies, setMovies] = useState([]);
-  const isSave = movies?.length>0? false: true;
+  const isSave = movies?.length > 0 ? false : true;
   const navigate = useNavigate();
   useEffect(() => {
     axios
       .get(`http://localhost:8081/favorite-saved-user?id_user=${id_persona}`)
       .then((res) => {
         setMovies(res.data);
-        
       })
       .catch((err) => console.log("Error: ", err));
   }, [id_persona]);
 
-  const deleteFavoriteMovie = (id_user, id_movie) =>{
-    
+  const deleteFavoriteMovie = (id_user, id_movie) => {
     axios
-    .delete(`http://localhost:8081/user-delete-movie/${id_user}/${id_movie}`)
-    .then((res)=>{
-      if(res.data.message==="Deleted"){
-        alert("Pelicula eliminada")
-        setMovies(prev => prev.filter(m => m.id_movie !== id_movie));
-        
-      }
-      
-    })
-    .catch((err)=>{
-      alert("ERROR")
-      console.log(err)
-    })
-  }
- const handleViewMoreInformation = (id_movie) =>{
-  navigate(`/movie/${id_movie}`, {state: {id_movie}})
- }
+      .delete(`http://localhost:8081/user-delete-movie/${id_user}/${id_movie}`)
+      .then((res) => {
+        if (res.data.message === "Deleted") {
+          alert("Pelicula eliminada");
+          setMovies((prev) => prev.filter((m) => m.id_movie !== id_movie));
+        }
+      })
+      .catch((err) => {
+        alert("ERROR");
+        console.log(err);
+      });
+  };
+  const handleViewMoreInformation = (id_movie) => {
+    navigate(`/movie/${id_movie}`, { state: { id_movie } });
+  };
 
   return (
     <div className="bg-black min-h-screen text-white pb-10">
@@ -51,7 +47,9 @@ function Favoritos() {
         <div className="grid grid-cols-2 max-w-[1200px] gap-6 justify-items-center mt-8 text-center">
           {movies?.map((element) => (
             <div className="w-full" key={element.id}>
-              <div className={`flex gap-2 px-4 py-4 justify-center border-2 border-white`}>
+              <div
+                className={`flex gap-2 px-4 py-4 justify-center border-2 border-white`}
+              >
                 <img
                   src={`/imagenesMovie/background/poster/${element.photo_url}.webp`}
                   width={200}
@@ -81,14 +79,18 @@ function Favoritos() {
                     <button
                       type="button"
                       className="bg-red-600  h-[30px] px-2 text-white"
-                      onClick={()=>deleteFavoriteMovie(element.id_user, element.id_movie)}
+                      onClick={() =>
+                        deleteFavoriteMovie(element.id_user, element.id_movie)
+                      }
                     >
                       Eliminar
                     </button>
                     <button
                       type="button"
                       className="bg-white px-2 h-[30px] text-black"
-                      onClick={()=>handleViewMoreInformation(element.id_movie)}
+                      onClick={() =>
+                        handleViewMoreInformation(element.id_movie)
+                      }
                     >
                       Ver información
                     </button>
@@ -99,7 +101,9 @@ function Favoritos() {
           ))}
         </div>
       </div>
-      {isSave && <div className="text-center ">No tiene ninguna pelicula favorita.</div>}
+      {isSave && (
+        <div className="text-center ">No tiene ninguna pelicula favorita.</div>
+      )}
     </div>
   );
 }

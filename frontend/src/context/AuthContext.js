@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 // Crear el contexto
 const AuthContext = createContext();
 
-// Hook para usarlo fácilmente
+// Hook para el contexto
 export const useAuth = () => useContext(AuthContext);
 
 // Proveedor del contexto

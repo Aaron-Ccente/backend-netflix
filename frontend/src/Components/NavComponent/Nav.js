@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext.js";
+import { useAuth } from "../../context/AuthContext.js";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 function Nav() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [ id_user, setIdUser ] = useState();
-  const handleLogOut = async () => {
-    await logout();
+  const handleLogOut = () => {
+    logout();
     navigate("/");
   };
   useEffect(() => {
@@ -32,10 +32,10 @@ function Nav() {
           <div className="flex items-center justify-center h-full">
             <div className="flex items-center justify-between w-full px-28">
               <span
-                className="text-3xl hover:cursor-pointer  h-[90px] w-[250px]"
+                className="text-3xl hover:cursor-pointer flex items-center  h-[90px] w-[250px]"
                 onClick={handleHome}
               >
-                <img width={250} height={90} alt="" src="/PELISUNCP.webp" />
+                <img width={250} height={60} className="max-h-[60px]" alt="PELISUNCP logo" src="/PELISUNCP.webp" />
               </span>
               <div className="flex gap-4 items-center text-white font-semibold mt-2">
                 <span>Bienvenido, {user?.name}</span>

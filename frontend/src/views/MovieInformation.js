@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Nav from "../NavComponent/Nav";
+import Nav from "../Components/NavComponent/Nav.js";
 
 function Movie() {
   const location = useLocation();
-  const [viewModal, setViewModal] = useState(false);
   const id = location.state?.id_movie;
+  const [viewModal, setViewModal] = useState(false);
   const [infoMovie, setInfoMovie] = useState([]);
   const [categories, setCategories] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -76,7 +76,9 @@ function Movie() {
 
   return (
     <div className="relative min-h-screen  text-white bg-black">
+      {/* Componente de navegación */}
       <Nav />
+
       <div className="pt-[90px]">
         <div className="flex items-center justify-center">
           <div
