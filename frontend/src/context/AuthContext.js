@@ -10,13 +10,18 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Recuperar usuario del localStorage al iniciar
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  // Agrega el estado de carga
+const [loading, setLoading] = useState(true);
+
+// Recuperar usuario del localStorage al iniciar
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    setUser(JSON.parse(storedUser));
+  }
+  setLoading(false); // Ya se procesó localStorage
+}, []);
+
 
   // Función para iniciar sesión
   const login = (userData) => {
@@ -34,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
