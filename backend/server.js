@@ -13,7 +13,7 @@ const db = mysql.createConnection({
     database: "signup"
 });
 
-
+ 
 
 
 //Inserta los datos para el registro de nuevos usuarios
