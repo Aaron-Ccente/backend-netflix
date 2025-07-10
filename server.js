@@ -194,7 +194,7 @@ app.get("/is-movie-saved", (req, res) => {
 
 //User delete movie saved in table user_save_movie
 app.delete("/user-delete-movie/:id_user/:id_movie", (req, res) => {
-  const { id_user, id_movie } = req.params;
+  const { id_user, id_movie } = req.params; //user-delete-movie/5/6
 
   const query = `DELETE FROM user_save_movie WHERE id_user = ? AND id_movie = ?`;
 
@@ -244,6 +244,31 @@ app.get("/favorite-saved-user", (req, res)=>{
   });
 });
 
+//Get all users with his information
+app.get("/all-users", (req,res)=>{
+  const query = `SELECT * FROM persona`
+  db.query(query, (err,result)=>{
+    if(err){
+      return res.status(500).json({error: "Error al obtener todos los usuarios", err})
+    }
+    else{
+      return res.status(200).json(result)
+    }
+  })
+})
+
+app.delete("/delete-user/:id", (req,res)=>{
+  const { id } = req.params; 
+  const query = `DELETE FROM persona WHERE id = ?`
+  db.query(query, [id], (err, result)=>{
+    if(err){
+      return res.status(500).json({error: "Error al eliminar usuario", err})
+    }
+    else{
+      return res.status(200).json(result)
+    }
+  })
+})
 
 // app.post("/signup", (req, res) => {
 //     const sql = "INSERT INTO persona (`name`, `email`, `password`, `role`) VALUES (?, ?, ?, ?)";
