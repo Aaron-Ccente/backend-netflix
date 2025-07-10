@@ -1,9 +1,9 @@
 // backend/models/userModel.js
 const db = require('../db');
 
-function createUser({ name, email, password, role }, callback) {
-  const sql = 'INSERT INTO persona (`name`, `email`, `password`, `role`) VALUES (?, ?, ?, ?)';
-  const values = [name, email, password, role];
+function createUser({ name, email, password, role, phone }, callback) {
+  const sql = 'INSERT INTO persona (`name`, `email`, `password`, `role`, `phone`) VALUES (?, ?, ?, ?, ?)';
+  const values = [name, email, password, role, phone];
   db.query(sql, values, callback);
 }
 
