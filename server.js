@@ -28,6 +28,26 @@ app.post("/signup", (req, res) => {
     });
 });
 
+//Actualizar usuarios
+app.put("/update-user/:id",(req,res)=>{
+  const {id}= req.params;
+  const {name,email,password,phone} = req.body;
+  const query = `UPDATE persona
+                 SET name = ?,
+                     email = ?,
+                     password = ?,
+                     phone = ?
+                 WHERE id = ?`;
+  db.query(query, [name,email,password,phone,id], (err,result)=>{
+    if(err){
+      return res.status(500).json({error: 'Error al actualizar el usuario', err})
+    }
+    else{
+      return res.status(200).json(result)
+    }
+  })
+})
+
 
 //Regresa el usuario que cumple con la condición ingresada (email y password)
 app.post("/login", (req, res) => {
