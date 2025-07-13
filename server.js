@@ -290,6 +290,88 @@ app.delete("/delete-user/:id", (req,res)=>{
   })
 })
 
+// prueba de PROCEDURE
+app.put("/update-actor", (req, res) => {
+    const { name, id } = req.body;
+
+    const query = `CALL updateNameActor(?, ?)`;
+
+    db.query(query, [name, id], (err, results) => {
+        if (err) {
+            console.error("Error al ejecutar el procedimiento:", err);
+            return res.status(500).json({ error: err.message || "Error al actualizar la película" });
+        }
+
+        return res.json({
+            success: true,
+            message: results[0]?.[0]?.mensaje
+        });
+    });
+});
+
+//Obtener todas las compañias usando PROCEDURE
+app.get("/get-all-companies",(_,res)=>{
+  const query = `CALL getAllCompanies()`
+  db.query(query,(err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al obtener las compañias"})
+    }
+    else{
+      return res.status(200).json({success: true,
+            message: result[0]})
+    }
+  })
+})
+
+//Crear una compañia usando PROCEDURE
+app.post("/create-company", (req,res)=>{
+  const { name } = req.body;
+  const query = `CALL createCompany(?)`;
+  db.query(query, [name], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al crear una compañia"})
+    }
+    else{
+      return res.status(200).json({
+        success: true,
+        message: result[0]?.[0]?.mensaje
+      })
+    }
+  })
+})
+
+//actualizar el nombre de una compañia usando PROCEDURE
+app.put("/update-company",(req,res)=>{
+  const { id, name } = req.body 
+  const query = `CALL updateCompany(?,?)`
+  db.query(query, [id,name], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento:', err)
+      return res.status(500).json({error: err.message || "Error al actualizar la compañia"})
+    }
+    else{
+      return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+    }
+  })
+})
+
+//Eliminar una compañia usando PROCEDURE
+ app.delete("/delete-company/:id",(req,res)=>{
+    const { id } = req.params;
+    const query = `CALL deleteCompany(?)`
+    db.query(query, [id], (err,result)=>{
+      if(err){
+        console.log('Error al ejecutar el procedimiento', err)
+        return res.status(500).json({ error: err.message || "Error al eliminar la compañia"})
+      }
+      else{
+        return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+      }
+    })
+ })
+
 // app.post("/signup", (req, res) => {
 //     const sql = "INSERT INTO persona (`name`, `email`, `password`, `role`) VALUES (?, ?, ?, ?)";
 //     const values = [
