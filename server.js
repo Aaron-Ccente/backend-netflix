@@ -290,230 +290,186 @@ app.delete("/delete-user/:id", (req,res)=>{
   })
 })
 
-// app.post("/signup", (req, res) => {
-//     const sql = "INSERT INTO persona (`name`, `email`, `password`, `role`) VALUES (?, ?, ?, ?)";
-//     const values = [
-//         req.body.name,
-//         req.body.email,
-//         req.body.password,
-//         req.body.role
-//     ];
-//     db.query(sql, values, (err, data) => {
-//         if (err) {
-//             console.error(err); // Para depuración
-//             return res.json({ error: "Error inserting data" });
-//         }
-//         return res.json({ success: true, data });
-//     });
-// });
+// prueba de PROCEDURE
+app.put("/update-actor", (req, res) => {
+    const { name, id } = req.body;
 
+    const query = `CALL updateNameActor(?, ?)`;
 
-//Añade la pertenencia de un actor con una movie
+    db.query(query, [name, id], (err, results) => {
+        if (err) {
+            console.error("Error al ejecutar el procedimiento:", err);
+            return res.status(500).json({ error: err.message || "Error al actualizar la película" });
+        }
 
-// app.post("/add-movie_actors", (req, res) => {
-//   const movie_actors = Array.isArray(req.body) ? req.body : [req.body]; // Acepta 1 o muchas
+        return res.json({
+            success: true,
+            message: results[0]?.[0]?.mensaje
+        });
+    });
+});
+//-------------------------------------------------------------------------------------------------------------------
+//Crear actores
+app.post("/create-actor", (req, res) => {
+    const { name, image_actor, biography, date_of_birth } = req.body;
 
-//   const query = `
-//     INSERT INTO movie_actors (id_movie, id_actor, character_name)
-//     VALUES (?, ?, ?)
-//   `;
+    const query = `CALL createActor(?, ?, ?, ?)`;
+    db.query(query, [name, image_actor, biography, date_of_birth], (err, result) => {
+        if (err) {
+            console.error("Error al ejecutar el procedimiento:", err);
+            return res.status(500).json({ error: err.message || "Error al crear el actor" });
+        }
 
-//   const insertions = movie_actors.map(movie_actor => {
-//     const { id_movie, id_actor, character_name } = movie_actor;
-//     return new Promise((resolve, reject) => {
-//       db.query(
-//         query,
-//         [id_movie, id_actor, character_name],
-//         (err, result) => {
-//           if (err) reject(err);
-//           else resolve(result.insertId);
-//         }
-//       );
-//     });
-//   });
+        return res.json({
+            success: true,
+            message: result[0]?.[0]?.mensaje
+        });
+    });
+});
 
-//   Promise.all(insertions)
-//     .then(ids => res.status(200).json({ message: "Actores agregados a su pelicula", ids }))
-//     .catch(err => {
-//       console.error("Error al insertar actors con movie:", err);
-//       res.status(500).json({ error: "Error al insertar actors con movie:" });
-//     });
-// });
-
-
-//Añade actores a la tabla actor
-
-// app.post("/add-actors", (req, res) => {
-//   const actors = Array.isArray(req.body) ? req.body : [req.body]; // Acepta 1 o muchas
-
-//   const query = `
-//     INSERT INTO actor (name, image_actor)
-//     VALUES (?, ?)
-//   `;
-
-//   const insertions = actors.map(actor => {
-//     const { name, image_actor } = actor;
-//     return new Promise((resolve, reject) => {
-//       db.query(
-//         query,
-//         [name, image_actor],
-//         (err, result) => {
-//           if (err) reject(err);
-//           else resolve(result.insertId);
-//         }
-//       );
-//     });
-//   });
-
-//   Promise.all(insertions)
-//     .then(ids => res.status(200).json({ message: "Actores agregados correctamente", ids }))
-//     .catch(err => {
-//       console.error("Error al insertar actores:", err);
-//       res.status(500).json({ error: "Error al insertar actores:" });
-//     });
-// });
-
-
-//Añade generos a la tabla production_company
-
-// app.post("/add-production_company", (req, res) => {
-//   const production_companies = Array.isArray(req.body) ? req.body : [req.body]; // Acepta 1 o muchas
-
-//   const query = `
-//     INSERT INTO production_company (name)
-//     VALUES (?)
-//   `;
-
-//   const insertions = production_companies.map(production_company => {
-//     const { name } = production_company;
-//     return new Promise((resolve, reject) => {
-//       db.query(
-//         query,
-//         [name],
-//         (err, result) => {
-//           if (err) reject(err);
-//           else resolve(result.insertId);
-//         }
-//       );
-//     });
-//   });
-
-//   Promise.all(insertions)
-//     .then(ids => res.status(200).json({ message: "Compañias de produccion agregadas", ids }))
-//     .catch(err => {
-//       console.error("Error al insertar compañias de produccion:", err);
-//       res.status(500).json({ error: "Error al insertar compañias de produccion:" });
-//     });
-// });
-
-
-//Añade generos a la tabla genre
-
-// app.post("/add-genre", (req, res) => {
-//   const production_companies = Array.isArray(req.body) ? req.body : [req.body]; // Acepta 1 o muchas
-
-//   const query = `
-//     INSERT INTO genre (name)
-//     VALUES (?)
-//   `;
-
-//   const insertions = production_companies.map(genre => {
-//     const { name } = genre;
-//     return new Promise((resolve, reject) => {
-//       db.query(
-//         query,
-//         [name],
-//         (err, result) => {
-//           if (err) reject(err);
-//           else resolve(result.insertId);
-//         }
-//       );
-//     });
-//   });
-
-//   Promise.all(insertions)
-//     .then(ids => res.status(200).json({ message: "Generos agregadas", ids }))
-//     .catch(err => {
-//       console.error("Error al insertar generos:", err);
-//       res.status(500).json({ error: "Error al insertar generos" });
-//     });
-// });
+//Obtener todos los actores
+app.get("/get-all-actors", (_, res) => {
+  const query = `CALL getAllActors()`;
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log('Error al ejecutar el procedimiento', err);
+      return res.status(500).json({ error: err.message || "Error al obtener los actores" });
+    }
+    return res.status(200).json({ success: true, data: result[0], message: result[1]?.[0].mensaje });
+  });
+});
 
 
 
-//Añade peliculas en la tabla movie
+//-------------------------------------------------------------------------------------------------------------------
+//Obtener todos los generos de peliculas
+app.get("/get-all-genres",(_,res)=>{
+  const query = `CALL getAllGenres()`
+  db.query(query, (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al obtener los generos" })
+    }
+    else{
+      return res.status(200).json({success: true, data:result[0], message: result[1]?.[0].mensaje})
+    }
+  })
+})
 
-// app.post("/add-movies", (req, res) => {
-//   const movies = Array.isArray(req.body) ? req.body : [req.body]; // Acepta 1 o muchas
+//Crear generos de peliculas
+app.post("/create-genre",(req,res)=>{
+  const { name } = req.body;
+  const query = `CALL createGenre(?)`
+  db.query(query, [name], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al crear un genero."})
+    }
+    else{
+      return res.status(200).json({
+        success: true,
+        message: result[0]?.[0]?.mensaje
+      })
+    }
+  })
+})
 
-//   const query = `
-//     INSERT INTO movie (title, description, release_year, photo_url, background_url, trailer_url)
-//     VALUES (?, ?, ?, ?, ?, ?)
-//   `;
+//Actualizar el nombre de una categoria
+app.put("/update-genre/:id",(req,res)=>{
+  const { id } = req.params;
+  const { name } = req.body;
+  const query = `CALL updateGenre(?,?)`;
+  db.query(query, [id, name], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al actualizar la categoria"})
+    }
+    else{
+      return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+    }
+  })
+})
 
-//   const insertions = movies.map(movie => {
-//     const { title, description, release_year, photo_url, background_url, trailer_url } = movie;
-//     return new Promise((resolve, reject) => {
-//       db.query(
-//         query,
-//         [title, description, release_year, photo_url, background_url, trailer_url],
-//         (err, result) => {
-//           if (err) reject(err);
-//           else resolve(result.insertId);
-//         }
-//       );
-//     });
-//   });
+//Eliminar una categori
+app.delete("/delete-genre/:id",(req,res)=>{
+  const { id } = req.params;
+  const query = `CALL deleteGenre(?)`;
+  db.query(query, [id], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al eliminar una categoria" })
+    }
+    else{
+      return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+    }
+  })
+})
 
-//   Promise.all(insertions)
-//     .then(ids => res.status(200).json({ message: "Películas agregadas", ids }))
-//     .catch(err => {
-//       console.error("Error al insertar películas:", err);
-//       res.status(500).json({ error: "Error al insertar películas" });
-//     });
-// });
+//-------------------------------------------------------------------------------------------------------------------
+//Obtener todas las compañias usando PROCEDURE
+app.get("/get-all-companies",(_,res)=>{
+  const query = `CALL getAllCompanies()`
+  db.query(query,(err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al obtener las compañias"})
+    }
+    else{
+      return res.status(200).json({success: true,
+            message: result[0]})
+    }
+  })
+})
 
+//Crear una compañia usando PROCEDURE
+app.post("/create-company", (req,res)=>{
+  const { name } = req.body;
+  const query = `CALL createCompany(?)`;
+  db.query(query, [name], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({error: err.message || "Error al crear una compañia"})
+    }
+    else{
+      return res.status(200).json({
+        success: true,
+        message: result[0]?.[0]?.mensaje
+      })
+    }
+  })
+})
 
+//actualizar el nombre de una compañia usando PROCEDURE
+app.put("/update-company",(req,res)=>{
+  const { id, name } = req.body 
+  const query = `CALL updateCompany(?,?)`
+  db.query(query, [id,name], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento:', err)
+      return res.status(500).json({error: err.message || "Error al actualizar la compañia"})
+    }
+    else{
+      return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+    }
+  })
+})
 
-//Actualizar la fecha de nacimiento y biografia
-// app.put("/update-biografias", (req, res) => {
-//   const actores = req.body; // Se espera un array de objetos: [{ id_actor, date_of_birth, biography }, ...]
+//Eliminar una compañia usando PROCEDURE
+ app.delete("/delete-company/:id",(req,res)=>{
+    const { id } = req.params;
+    const query = `CALL deleteCompany(?)`
+    db.query(query, [id], (err,result)=>{
+      if(err){
+        console.log('Error al ejecutar el procedimiento', err)
+        return res.status(500).json({ error: err.message || "Error al eliminar la compañia"})
+      }
+      else{
+        return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+      }
+    })
+ })
 
-//   if (!Array.isArray(actores) || actores.length === 0) {
-//     return res.status(400).json({ error: "Se requiere un array de actores con id, date_of_birth y biography" });
-//   }
-
-//   const query = `
-//     UPDATE actor
-//     SET date_of_birth = ?, biography = ?
-//     WHERE id = ?
-//   `;
-
-//   let errores = [];
-//   let completados = 0;
-
-//   actores.forEach(({ id, date_of_birth, biography }) => {
-//     db.query(query, [date_of_birth, biography, id], (err, result) => {
-//       completados++;
-
-//       if (err) {
-//         errores.push({ id, error: err.message });
-//       }
-
-//       // Enviar respuesta solo cuando se haya procesado todo
-//       if (completados === actores.length) {
-//         if (errores.length > 0) {
-//           res.status(500).json({ message: "Actualización completada con errores", errores });
-//         } else {
-//           res.status(200).json({ message: "Todas las biografías actualizadas con éxito", result });
-//         }
-//       }
-//     });
-//   });
-// });
-
-
-
+//-------------------------------------------------------------------------------------------------------------------
 app.listen(8081, () => {
     console.log("Server running on port 8081");
 });
