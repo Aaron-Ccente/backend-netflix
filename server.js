@@ -3,10 +3,11 @@ const cors = require("cors");
 const db = require("./db");
 const userModel = require("./models/userModel");
 const movieModel = require("./models/movieModel");
+const { transformarPeliculas } = require("./CleanMoviesData");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 
 //Inserta los datos para el registro de nuevos usuarios
@@ -289,25 +290,89 @@ app.delete("/delete-user/:id", (req,res)=>{
     }
   })
 })
+//-------------------------------------------------------------------------------------------------------------------
+//Crear peliculas
+app.post("/create-movie", (req, res) => {
+  const {
+    title, description, release_year, photo_url, background_url,
+    trailer_url, movie_actors, movie_genre, movie_production_company
+  } = req.body;
 
-// prueba de PROCEDURE
-app.put("/update-actor", (req, res) => {
-    const { name, id } = req.body;
-
-    const query = `CALL updateNameActor(?, ?)`;
-
-    db.query(query, [name, id], (err, results) => {
-        if (err) {
-            console.error("Error al ejecutar el procedimiento:", err);
-            return res.status(500).json({ error: err.message || "Error al actualizar la película" });
-        }
-
-        return res.json({
-            success: true,
-            message: results[0]?.[0]?.mensaje
-        });
+  // Validaciones básicas
+  if (!movie_actors.length || !movie_genre.length || !movie_production_company.length) {
+    return res.status(400).json({
+      error: 'La película debe tener al menos un actor, género y compañía de producción'
+    });
+  }
+  db.query("CALL createMovie(?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+      title,
+      description,
+      release_year,
+      photo_url,
+      background_url,
+      trailer_url,
+      JSON.stringify(movie_actors),
+      JSON.stringify(movie_genre),
+      JSON.stringify(movie_production_company)
+    ], (err,result)=>{
+      if(err){
+        console.log('Error al ejecutar el procedimiento', err)
+        return res.status(500).json({error: 'No se pudo crear la pelicula'})
+      }
+      else{
+        return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+      }
     });
 });
+
+//Obtener todas las peliculas
+app.get("/get-all-movies", (_,res)=>{
+  const query = `CALL getAllMovies()`
+  db.query(query, (err, result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiiento', err)
+      return res.status(500).json({error: err.message || 'Error al obtener el procedimiento'})
+    }
+    else{
+      const data = transformarPeliculas(result[0])
+      return res.status(200).json(data)
+    }
+  })
+})
+
+//Actualizar una película
+app.put("/update-movie/:id", (req, res)=>{
+  const { id } = req.params;
+  const {
+    title, description, release_year, photo_url, background_url,
+    trailer_url, movie_actors, movie_genre, movie_production_company
+  } = req.body;
+
+  const query = `CALL updateMovie(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  db.query(query, [id, title, description, release_year, photo_url, background_url, trailer_url, JSON.stringify(movie_actors), JSON.stringify(movie_genre), JSON.stringify(movie_production_company)], (err, result) => {
+    if (err) {
+      console.log('Error al ejecutar el procedimiento', err);
+      return res.status(500).json({ error: err.message || "Error al actualizar la película" });
+    }
+    return res.status(200).json({ success: true, message: result[0]?.[0]?.mensaje });
+  });
+});
+
+//Eliminiar una película
+app.delete("/delete-movie/:id", (req, res)=>{
+    const { id } = req.params;
+    const query = `CALL deleteMovie(?)`
+    db.query(query, [id], (err, result)=>{
+      if(err){
+        console.log('Error al ejecutar el procedimiento', err)
+        return res.status(500).json({ error: err.message || 'Error al eliminar la pelicula'})
+      }
+      else{
+        return res.status(200).json({success: true, message: result[0]?.[0]?.mensaje})
+      }
+    })
+})
+
 //-------------------------------------------------------------------------------------------------------------------
 //Crear actores
 app.post("/create-actor", (req, res) => {
@@ -339,8 +404,38 @@ app.get("/get-all-actors", (_, res) => {
   });
 });
 
+//Actualizar un actor
+app.put("/update-actor/:id",(req,res)=>{
+  const { id } = req.params;
+  const { name, image_actor, biography, date_of_birth } = req.body;
+  const query = `CALL updateActor(?,?,?,?,?)`;
+  db.query(query, [id, name, image_actor, biography, date_of_birth ], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({ error: err.message || "Error al actualizar el actor"})
+    }
+    else{
+      return res.status(200).json({
+        success: true,
+        message: result[0]?.[0]?.mensaje
+      })
+    }
+  })
+})
 
-
+app.delete("/delete-actor/:id",(req,res)=>{
+  const { id } = req.params;
+  const query = `CALL deleteActor(?)`
+  db.query(query, [id], (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({ error: err.message || 'Error al eliminar actor'})
+    }
+    else{
+      return res.status(200).json({ success: true, message: result[0]?.[0]?.mensaje})
+    }
+  })
+})
 //-------------------------------------------------------------------------------------------------------------------
 //Obtener todos los generos de peliculas
 app.get("/get-all-genres",(_,res)=>{
@@ -468,7 +563,20 @@ app.put("/update-company",(req,res)=>{
       }
     })
  })
-
+//-------------------------------------------------------------------------------------------------------------------
+//Obtener generos, compañias productoras y actores - en todos solo el id y el nombre
+app.get("/getGenreCompanyAndActors",(_, res)=>{
+  const query = `CALL getAllGenreCompanyActorsForSelect()`
+  db.query(query,(err,result)=>{
+    if(err){
+      console.log('Error al ejecutar procedimiento', err)
+      return res.status(500).json({error: err.message})
+    }
+    else{
+      return res.status(200).json(result[0]?.[0])
+    }
+  })
+})
 //-------------------------------------------------------------------------------------------------------------------
 app.listen(8081, () => {
     console.log("Server running on port 8081");
