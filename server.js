@@ -29,27 +29,6 @@ app.post("/signup", (req, res) => {
     });
 });
 
-//Actualizar usuarios
-app.put("/update-user/:id",(req,res)=>{
-  const {id}= req.params;
-  const {name,email,password,phone} = req.body;
-  const query = `UPDATE persona
-                 SET name = ?,
-                     email = ?,
-                     password = ?,
-                     phone = ?
-                 WHERE id = ?`;
-  db.query(query, [name,email,password,phone,id], (err,result)=>{
-    if(err){
-      return res.status(500).json({error: 'Error al actualizar el usuario', err})
-    }
-    else{
-      return res.status(200).json(result)
-    }
-  })
-})
-
-
 //Regresa el usuario que cumple con la condición ingresada (email y password)
 app.post("/login", (req, res) => {
     userModel.loginUser(req.body, (err, data) => {
@@ -69,7 +48,7 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.get("/movies", (req, res) => {
+app.get("/movies", (_, res) => {
   movieModel.getAllMovies((err, results) => {
     if (err) {
       console.error("Error al obtener películas:", err);
@@ -80,8 +59,8 @@ app.get("/movies", (req, res) => {
   });
 });
 
-//get the relationship of movie with its genrs
-app.get("/movie_genrs",(req, res)=>{
+//consigue las relacioneas de la pelicula y sus generos
+app.get("/movie_genrs",(_, res)=>{
   const query = `SELECT * FROM movie_genres`
   db.query(query, (err, result)=>{
     if (err) {
@@ -93,8 +72,8 @@ app.get("/movie_genrs",(req, res)=>{
   })
 });
 
-//get the genrs
-app.get("/genre",(req, res)=>{
+//Obteniene todos los generos
+app.get("/genre",(_, res)=>{
   const query = `SELECT * FROM genre ORDER BY id`;
   db.query(query, (err, result)=>{
     if(err){
@@ -106,7 +85,7 @@ app.get("/genre",(req, res)=>{
   })
 })
 
-// Taer toda la informacion de la pelicula
+//Obtiene toda la información de una pelicula
 app.get("/movie-id", (req, res)=>{
   const idMovie = req.query.id;//http://localhost:8081/movie-id?id=2
   const query = `SELECT * FROM movie WHERE id = ?`
@@ -120,8 +99,7 @@ app.get("/movie-id", (req, res)=>{
   })
 })
 
-
-//get movie with production companies
+//Obtiene la pelicula y sus compañias de produccion
 app.get("/movie-by-companies",(req, res)=>{
   const idMovie = req.query.id;
   const query = `SELECT production_company.* FROM production_company
@@ -138,7 +116,7 @@ app.get("/movie-by-companies",(req, res)=>{
   })
 })
 
-//get movie with genrs
+//Obtiene todos los generos
 app.get("/movie-by-genres", (req, res) => {
   const idMovie = req.query.id; // por ejemplo: /movies-by-genre?id=1
 
@@ -158,9 +136,7 @@ app.get("/movie-by-genres", (req, res) => {
   });
 });
 
-
-//Get actors (Repart) with their
-
+//Obtiene todos los actores de una pelicula
 app.get("/actors-by-movie", (req, res)=>{
   const idMovie = req.query.id; //http://actors-by-movie?id=2
   const query = `SELECT actor.*, character_name FROM actor
@@ -177,8 +153,7 @@ db.query(query, [idMovie], (err, result)=>{
 })
 })
 
-
-//User saved movie in table user_save_movie
+//Guarda pelicula seleccionada por el usuario
 app.post("/user-save-movie",(req, res)=>{
 
   const { id_user, id_movie } = req.body;
@@ -197,7 +172,7 @@ app.post("/user-save-movie",(req, res)=>{
   })
 })
 
-//The movie is saved?
+//Para actualizar peliculas guardadas
 app.get("/is-movie-saved", (req, res) => {
   const { id_movie, id_user } = req.query;
   const query = `SELECT * FROM user_save_movie WHERE id_movie = ? AND id_user = ?`;
@@ -212,8 +187,7 @@ app.get("/is-movie-saved", (req, res) => {
   });
 });
 
-
-//User delete movie saved in table user_save_movie
+//Elimina pelicula guardada por el usuario
 app.delete("/user-delete-movie/:id_user/:id_movie", (req, res) => {
   const { id_user, id_movie } = req.params; //user-delete-movie/5/6
 
@@ -232,10 +206,7 @@ app.delete("/user-delete-movie/:id_user/:id_movie", (req, res) => {
   });
 });
 
-
-
-
-//Get id user of Person loged
+//Obtiene el id del usuario segun el id de la persona
 app.get("/userId-of-person",(req, res)=>{
   const id_persona = req.query.id_persona;
   const query = `SELECT id_user FROM user WHERE id_persona=?`
@@ -248,8 +219,7 @@ app.get("/userId-of-person",(req, res)=>{
   });
 });
 
-
-//Get favorite movies saved by user
+//Obtiene las peliculas favoritas del usuario
 app.get("/favorite-saved-user", (req, res)=>{
   const id_user = req.query.id_user; //http://localhost:8081/favorite-saved-user?id_user=4
   const query = `SELECT id_user, id_movie, title, description, release_year, photo_url FROM user_save_movie 
@@ -265,8 +235,8 @@ app.get("/favorite-saved-user", (req, res)=>{
   });
 });
 
-//Get all users with his information
-app.get("/all-users", (req,res)=>{
+//Obtiene toda la informacion de la tabla persona
+app.get("/all-users", (_,res)=>{
   const query = `SELECT * FROM persona`
   db.query(query, (err,result)=>{
     if(err){
@@ -278,6 +248,27 @@ app.get("/all-users", (req,res)=>{
   })
 })
 
+//Actualizar usuario por id - params
+app.put("/update-user/:id",(req,res)=>{
+  const {id}= req.params;
+  const {name,email,password,phone} = req.body;
+  const query = `UPDATE persona
+                 SET name = ?,
+                     email = ?,
+                     password = ?,
+                     phone = ?
+                 WHERE id = ?`;
+  db.query(query, [name,email,password,phone,id], (err,result)=>{
+    if(err){
+      return res.status(500).json({error: 'Error al actualizar el usuario', err})
+    }
+    else{
+      return res.status(200).json(result)
+    }
+  })
+})
+
+//Eliminar usuario por id - params
 app.delete("/delete-user/:id", (req,res)=>{
   const { id } = req.params; 
   const query = `DELETE FROM persona WHERE id = ?`
@@ -290,6 +281,7 @@ app.delete("/delete-user/:id", (req,res)=>{
     }
   })
 })
+
 //-------------------------------------------------------------------------------------------------------------------
 //Crear peliculas
 app.post("/create-movie", (req, res) => {
@@ -436,6 +428,7 @@ app.delete("/delete-actor/:id",(req,res)=>{
     }
   })
 })
+
 //-------------------------------------------------------------------------------------------------------------------
 //Obtener todos los generos de peliculas
 app.get("/get-all-genres",(_,res)=>{
@@ -563,6 +556,7 @@ app.put("/update-company",(req,res)=>{
       }
     })
  })
+
 //-------------------------------------------------------------------------------------------------------------------
 //Obtener generos, compañias productoras y actores - en todos solo el id y el nombre
 app.get("/getGenreCompanyAndActors",(_, res)=>{
