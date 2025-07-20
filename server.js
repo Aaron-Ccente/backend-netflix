@@ -9,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-
 //Inserta los datos para el registro de nuevos usuarios
 app.post("/signup", (req, res) => {
     userModel.createUser(req.body, (err, result) => {
