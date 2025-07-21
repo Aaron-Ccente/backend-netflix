@@ -570,6 +570,21 @@ app.get("/getGenreCompanyAndActors",(_, res)=>{
     }
   })
 })
+
+//Cantidad de generos de peliculas guardadas - para estadisticas
+app.get("/stadistics-genres-count", (_, res)=>{
+  const query = `CALL stadisticGenre()`
+  db.query(query, (err,result)=>{
+    if(err){
+      console.log('Error al ejecutar el procedimiento', err)
+      return res.status(500).json({ error: err.message  || 'Error al obtener la cantidad de usuarios que guardaron peliculas con los generos' })
+    }
+    else{
+      return res.status(200).json({ success: true, data: result[0] })
+    }
+  })
+})
+
 //-------------------------------------------------------------------------------------------------------------------
 app.listen(8081, () => {
     console.log("Server running on port 8081");
