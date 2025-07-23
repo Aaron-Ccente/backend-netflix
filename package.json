@@ -7,9 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "migrate": "node migrate.js",
-    "seed": "node seed.js",
-    "postinstall": "npm run migrate && npm run seed"
+    "migrate": "node migrate.js"
   },
   "keywords": [],
   "author": "",
