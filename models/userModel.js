@@ -1,13 +1,13 @@
 // backend/models/userModel.js
-const db = require('../db');
+import db from '../db.js';
 
-function createUser({ name, email, password, role, phone }, callback) {
+export function createUser({ name, email, password, role, phone }, callback) {
   const sql = 'INSERT INTO persona (`name`, `email`, `password`, `role`, `phone`) VALUES (?, ?, ?, ?, ?)';
   const values = [name, email, password, role, phone];
   db.query(sql, values, callback);
 }
 
-function assignRole(userId, role, callback) {
+export function assignRole(userId, role, callback) {
   let roleSql = '';
   if (role === 'administrador') {
     roleSql = 'INSERT INTO admin (`id_persona`) VALUES (?)';
@@ -19,13 +19,7 @@ function assignRole(userId, role, callback) {
   db.query(roleSql, [userId], callback);
 }
 
-function loginUser({ email, password }, callback) {
+export function loginUser({ email, password }, callback) {
   const sql = "SELECT * FROM persona WHERE `email` = ? AND `password` = ?";
   db.query(sql, [email, password], callback);
 }
-
-module.exports = {
-  createUser,
-  assignRole,
-  loginUser,
-};
