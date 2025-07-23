@@ -1,6 +1,6 @@
-const db = require('./db');
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import db from './db.js';
 
 const data = JSON.parse(fs.readFileSync(path.join(__dirname, '../frontend/src/Database/bd.json'), 'utf8'));
 

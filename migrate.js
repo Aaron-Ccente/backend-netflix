@@ -1,4 +1,4 @@
-const db = require('./db');
+import db from "./db.js";
 
 const migrationSQL = `
 DROP TABLE IF EXISTS user_save_movie, user, production_company, persona, movie_production_companies, movie_genres, movie_actors, movie, genre, admin, actor;
