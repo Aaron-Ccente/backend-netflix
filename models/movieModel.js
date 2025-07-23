@@ -1,11 +1,7 @@
-const db = require('../db');
+import db from '../db.js';
 
-function getAllMovies(callback) {
+export function getAllMovies(callback) {
   const query = "SELECT * FROM movie";
   db.query(query, callback);
 }
-
-module.exports = {
-  getAllMovies,
-};
 
