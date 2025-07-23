@@ -9,10 +9,10 @@
     "start": "nodemon server.js",
     "migrate": "node migrate.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["PELISUNCP", "UNCP", "WEB CON TEMÁTICA DE NETFLIX"],
+  "author": "Aaron Ccente Rojas - UNCP",
   "license": "ISC",
-  "description": "",
+  "description": "Backend para la web con tematica de netflix clone con panel de administrador.",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
