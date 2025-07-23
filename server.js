@@ -11,6 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
+app.get("/", (_,res)=>{
+  res.status(200).json({success: true, message: 'Hello in server'})
+})
+
 //Inserta los datos para el registro de nuevos usuarios
 app.post("/signup", (req, res) => {
     createUser(req.body, (err, result) => {
