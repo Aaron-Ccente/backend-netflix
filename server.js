@@ -1,9 +1,11 @@
-const express = require("express");
-const cors = require("cors");
-const db = require("./db");
-const userModel = require("./models/userModel");
-const movieModel = require("./models/movieModel");
-const { transformarPeliculas } = require("./CleanMoviesData");
+import express from "express";
+import cors from "cors";
+import db from "./db.js";
+import { getAllMovies } from './models/movieModel.js';
+import { createUser, assignRole, loginUser } from './models/userModel.js';
+
+import { transformarPeliculas } from "./CleanMoviesData.js";
+import { PORT } from './config.js';
 
 const app = express();
 app.use(cors());
@@ -11,14 +13,14 @@ app.use(express.json({ limit: '50mb' }));
 
 //Inserta los datos para el registro de nuevos usuarios
 app.post("/signup", (req, res) => {
-    userModel.createUser(req.body, (err, result) => {
+    createUser(req.body, (err, result) => {
         if (err) {
             console.error(err);
             return res.json({ error: "Error inserting data into login" });
         }
         const userId = result.insertId;
         const role = req.body.role.toLowerCase();
-        userModel.assignRole(userId, role, (roleErr) => {
+        assignRole(userId, role, (roleErr) => {
             if (roleErr) {
                 console.error(roleErr);
                 return res.json({ error: "Error inserting into role-specific table" });
@@ -30,7 +32,7 @@ app.post("/signup", (req, res) => {
 
 //Regresa el usuario que cumple con la condición ingresada (email y password)
 app.post("/login", (req, res) => {
-    userModel.loginUser(req.body, (err, data) => {
+    loginUser(req.body, (err, data) => {
         if (err) {
             return res.json({ error: "Error select data" });
         }
@@ -48,7 +50,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/movies", (_, res) => {
-  movieModel.getAllMovies((err, results) => {
+  getAllMovies((err, results) => {
     if (err) {
       console.error("Error al obtener películas:", err);
       res.status(500).json({ error: "Error al obtener películas" });
@@ -586,6 +588,6 @@ app.get("/stadistics-genres-count", (_, res)=>{
 })
 
 //-------------------------------------------------------------------------------------------------------------------
-app.listen(8081, () => {
-    console.log("Server running on port 8081");
+app.listen(PORT, () => {
+    console.log("Server running on port", PORT);
 });
