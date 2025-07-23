@@ -8,6 +8,9 @@ const db = mysql.createConnection({
     password: DB_PASSWORD,
     database: DB_NAME,
     port: DB_PORT,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
     multipleStatements: true
 });
 
